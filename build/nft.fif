@@ -1,0 +1,357 @@
+"Asm.fif" include
+// automatically generated from `C:\Users\Tigr\AppData\Local\toncli\toncli\func-libs\error_codes.func` `C:\Users\Tigr\AppData\Local\toncli\toncli\func-libs\math.func` `C:\Users\Tigr\AppData\Local\toncli\toncli\func-libs\stdlib.func` `D:\TON_FunC\onchain-nft-collectioned\func\nft.fc` 
+PROGRAM{
+  DECLPROC power
+  DECLPROC sqrt
+  DECLPROC avg
+  DECLPROC exp
+  DECLPROC log2
+  DECLPROC load_data
+  DECLPROC store_data
+  DECLPROC prepare_msg
+  DECLPROC transfer_ownership
+  DECLPROC recv_internal
+  102351 DECLMETHOD get_nft_data
+  power PROCREF:<{
+    //  x exponent
+    OVER	//  x exponent x
+    0 EQINT	//  x exponent _3
+    IFJMP:<{	//  x exponent
+      2DROP	// 
+      0 PUSHINT	//  _4=0
+    }>	//  x exponent
+    DUP	//  x exponent exponent
+    0 EQINT	//  x exponent _6
+    IFJMP:<{	//  x exponent
+      2DROP	// 
+      1 PUSHINT	//  _7=1
+    }>	//  x exponent
+    OVER	//  x counter result
+    WHILE:<{
+      OVER	//  x counter result counter
+      1 GTINT	//  x counter result _11
+    }>DO<{	//  x counter result
+      s2 PUSH	//  x counter result x
+      MUL	//  x counter result
+      SWAP	//  x result counter
+      DEC	//  x result counter
+      SWAP	//  x counter result
+    }>	//  x counter result
+    2 1 BLKDROP2	//  result
+  }>
+  sqrt PROCREF:<{
+    //  x
+    DUP	//  x x
+    0 EQINT	//  x _2
+    IFJMP:<{	//  x
+      DROP	// 
+      0 PUSHINT	//  _3=0
+    }>	//  x
+    DUP	//  x x
+    4 LESSINT	//  x _5
+    IFJMP:<{	//  x
+      DROP	// 
+      1 PUSHINT	//  _6=1
+    }>	//  x
+    DUP	//  x x
+    INC	//  x _9
+    1 RSHIFT#	//  x z
+    OVER	//  x z y
+    WHILE:<{
+      2DUP	//  x z y z y
+      LESS	//  x z y _13
+    }>DO<{	//  x z y
+      DROP	//  x z
+      s0 s1 s0 PUSH3	//  x z y x z
+      DIV	//  x z y _14
+      ROT	//  x y _14 z
+      ADD	//  x y _15
+      1 RSHIFT#	//  x y z
+      SWAP	//  x z y
+    }>	//  x z y
+    2 1 BLKDROP2	//  y
+  }>
+  avg PROCREF:<{
+    //  x y
+    ADD	//  _2
+    1 RSHIFT#	//  _4
+  }>
+  exp PROCREF:<{
+    //  x
+    DUP	//  x x
+    -1 GTINT	//  x _2
+    IF:<{	//  x
+      POW2	//  _3
+    }>ELSE<{	//  x
+      1 PUSHINT	//  x _6=1
+      SWAP	//  _6=1 x
+      NEGATE	//  _6=1 _8
+      RSHIFT	//  _3
+    }>
+  }>
+  log2 PROCREF:<{
+    //  x
+    0 PUSHINT	//  x n=0
+    7 PUSHPOW2	//  x n=0 _3=128
+    exp INLINECALLDICT	//  x n=0 _4
+    s2 s(-1) PUXC	//  x n=0 x _4
+    GEQ	//  x n=0 _5
+    IF:<{	//  x n=0
+      DROP	//  x
+      128 RSHIFT#	//  x
+      7 PUSHPOW2	//  x n
+    }>	//  x n
+    64 PUSHINT	//  x n _10=64
+    exp INLINECALLDICT	//  x n _11
+    s2 s(-1) PUXC	//  x n x _11
+    GEQ	//  x n _12
+    IF:<{	//  x n
+      SWAP	//  n x
+      64 RSHIFT#	//  n x
+      SWAP	//  x n
+      64 ADDCONST	//  x n
+    }>	//  x n
+    32 PUSHINT	//  x n _17=32
+    exp INLINECALLDICT	//  x n _18
+    s2 s(-1) PUXC	//  x n x _18
+    GEQ	//  x n _19
+    IF:<{	//  x n
+      SWAP	//  n x
+      32 RSHIFT#	//  n x
+      SWAP	//  x n
+      32 ADDCONST	//  x n
+    }>	//  x n
+    16 PUSHINT	//  x n _24=16
+    exp INLINECALLDICT	//  x n _25
+    s2 s(-1) PUXC	//  x n x _25
+    GEQ	//  x n _26
+    IF:<{	//  x n
+      SWAP	//  n x
+      16 RSHIFT#	//  n x
+      SWAP	//  x n
+      16 ADDCONST	//  x n
+    }>	//  x n
+    8 PUSHINT	//  x n _31=8
+    exp INLINECALLDICT	//  x n _32
+    s2 s(-1) PUXC	//  x n x _32
+    GEQ	//  x n _33
+    IF:<{	//  x n
+      SWAP	//  n x
+      8 RSHIFT#	//  n x
+      SWAP	//  x n
+      8 ADDCONST	//  x n
+    }>	//  x n
+    4 PUSHINT	//  x n _38=4
+    exp INLINECALLDICT	//  x n _39
+    s2 s(-1) PUXC	//  x n x _39
+    GEQ	//  x n _40
+    IF:<{	//  x n
+      SWAP	//  n x
+      4 RSHIFT#	//  n x
+      SWAP	//  x n
+      4 ADDCONST	//  x n
+    }>	//  x n
+    2 PUSHINT	//  x n _45=2
+    exp INLINECALLDICT	//  x n _46
+    s2 s(-1) PUXC	//  x n x _46
+    GEQ	//  x n _47
+    IF:<{	//  x n
+      SWAP	//  n x
+      2 RSHIFT#	//  n x
+      SWAP	//  x n
+      2 ADDCONST	//  x n
+    }>	//  x n
+    1 PUSHINT	//  x n _52=1
+    exp INLINECALLDICT	//  x n _53
+    s1 s2 XCHG	//  n x _53
+    GEQ	//  n _54
+    IF:<{	//  n
+      INC	//  n
+    }>	//  n
+  }>
+  load_data PROCINLINE:<{
+    // 
+    c4 PUSH	//  _1
+    CTOS	//  ds
+    1 LDI	//  _3 ds
+    8 LDU	//  _3 _6 ds
+    LDMSGADDR	//  _3 _6 _9 ds
+    4 TUPLE	//  _11
+  }>
+  store_data PROCINLINE:<{
+    //  info
+    4 UNTUPLE	//  approved index coll owner
+    s0 s3 XCHG
+    NEWC	//  owner index coll approved _6
+    1 STI	//  owner index coll _8
+    s1 s2 XCHG	//  owner coll index _8
+    8 STU	//  owner coll _10
+    SWAP	//  owner _10 coll
+    STSLICER	//  owner _11
+    SWAP	//  _11 owner
+    STSLICER	//  _12
+    ENDC	//  _13
+    c4 POP
+  }>
+  prepare_msg PROCINLINE:<{
+    //  to_address amount op query_id
+    16 PUSHINT	//  to_address amount op query_id _4=16
+    NEWC	//  to_address amount op query_id _4=16 _5
+    6 STU	//  to_address amount op query_id _7
+    s0 s4 XCHG2	//  query_id amount op _7 to_address
+    STSLICER	//  query_id amount op _8
+    ROT	//  query_id op _8 amount
+    STVARUINT16	//  query_id op _9
+    139 STU	//  query_id _25
+    64 STU	//  _27
+  }>
+  transfer_ownership PROCINLINE:<{
+    //  sender_address query_id in_msg_body
+    load_data INLINECALLDICT	//  sender_address query_id in_msg_body info
+    TPOP	//  sender_address query_id in_msg_body info owner_address
+    s4 s4 XCPU	//  owner_address query_id in_msg_body info sender_address owner_address
+    SDEQ	//  owner_address query_id in_msg_body info _9
+    32 THROWIFNOT
+    SWAP	//  owner_address query_id info in_msg_body
+    LDMSGADDR	//  owner_address query_id info new_owner_address in_msg_body
+    s2 s1 XCPU	//  owner_address query_id in_msg_body new_owner_address info new_owner_address
+    TPUSH	//  owner_address query_id in_msg_body new_owner_address info
+    store_data INLINECALLDICT
+    SWAP	//  owner_address query_id new_owner_address in_msg_body
+    LDMSGADDR	//  owner_address query_id new_owner_address response_destination in_msg_body
+    1 LDI	//  owner_address query_id new_owner_address response_destination _51 _50
+    NIP	//  owner_address query_id new_owner_address response_destination in_msg_body
+    LDVARUINT16	//  owner_address query_id new_owner_address response_destination forward_amount in_msg_body
+    OVER	//  owner_address query_id new_owner_address response_destination forward_amount in_msg_body forward_amount
+    IF:<{	//  owner_address query_id new_owner_address response_destination forward_amount in_msg_body
+      s3 s3 XCHG2
+      85167505 PUSHINT
+      s5 PUSH	//  owner_address query_id in_msg_body response_destination new_owner_address forward_amount _26=85167505 query_id
+      prepare_msg INLINECALLDICT	//  owner_address query_id in_msg_body response_destination _27
+      s0 s4 XCHG2	//  response_destination query_id in_msg_body _27 owner_address
+      STSLICER	//  response_destination query_id in_msg_body _28
+      SWAP	//  response_destination query_id _28 in_msg_body
+      STSLICER	//  response_destination query_id _29
+      ENDC	//  response_destination query_id _30
+      1 PUSHINT	//  response_destination query_id _30 _31=1
+      SENDRAWMSG
+    }>ELSE<{
+      2DROP
+      s3 POP
+      DROP	//  response_destination query_id
+    }>
+    OVER	//  response_destination query_id response_destination
+    SBITS	//  response_destination query_id _33
+    2 GTINT	//  response_destination query_id _35
+    IF:<{	//  response_destination query_id
+      0 PUSHINT	//  response_destination query_id _36=0
+      3576854235 PUSHINT
+      ROT	//  response_destination _36=0 _37=3576854235 query_id
+      prepare_msg INLINECALLDICT	//  _38
+      ENDC	//  _39
+      130 PUSHINT	//  _39 _42
+      SENDRAWMSG
+    }>ELSE<{
+      2DROP	// 
+    }>
+  }>
+  recv_internal PROC:<{
+    //  my_balance msg_value in_msg_full in_msg_body
+    s3 POP
+    NIP	//  in_msg_body in_msg_full
+    CTOS	//  in_msg_body cs
+    4 LDU	//  in_msg_body _6 cs
+    SWAP
+    1 PUSHINT	//  in_msg_body cs _6 _9=1
+    AND	//  in_msg_body cs _10
+    IFRETALT
+    LDMSGADDR	//  in_msg_body _79 _78
+    DROP	//  in_msg_body sender_address
+    c4 PUSH	//  in_msg_body sender_address _16
+    CTOS	//  in_msg_body sender_address ds
+    1 LDU	//  in_msg_body sender_address _18 ds
+    SWAP	//  in_msg_body sender_address ds _18
+    IFNOTJMP:<{	//  in_msg_body sender_address ds
+      s2 POP	//  ds sender_address
+      OVER
+      8 PUSHINT	//  ds' sender_address ds _23=8
+      SDSKIPFIRST	//  ds' sender_address ds
+      LDMSGADDR	//  ds' sender_address _83 _82
+      DROP	//  ds' sender_address _25
+      SDEQ	//  ds' _27
+      IFNOTRETALT
+      1 PUSHINT	//  ds' _29=1
+      NEWC	//  ds' _29=1 _30
+      1 STU	//  ds' _32
+      SWAP	//  _32 ds'
+      STSLICER	//  _33
+      ENDC	//  _34
+      c4 POP
+    }>	//  in_msg_body sender_address ds
+    DROP	//  in_msg_body sender_address
+    OVER	//  in_msg_body sender_address in_msg_body
+    SEMPTY	//  in_msg_body sender_address _36
+    IFRETALT
+    26 PUSHPOW2	//  in_msg_body sender_address _38=67108864
+    0 PUSHINT	//  in_msg_body sender_address _38=67108864 _39=0
+    RAWRESERVE
+    SWAP	//  sender_address in_msg_body
+    32 LDU	//  sender_address op in_msg_body
+    64 LDU	//  sender_address op query_id in_msg_body
+    s2 PUSH
+    1607220500 PUSHINT	//  sender_address op query_id in_msg_body op _49=1607220500
+    EQUAL	//  sender_address op query_id in_msg_body _50
+    IFJMP:<{	//  sender_address op query_id in_msg_body
+      1 2 BLKDROP2	//  sender_address query_id in_msg_body
+      transfer_ownership INLINECALLDICT
+    }>	//  sender_address op query_id in_msg_body
+    DROP	//  sender_address op query_id
+    SWAP
+    801842850 PUSHINT	//  sender_address query_id op _52=801842850
+    EQUAL	//  sender_address query_id _53
+    IFJMP:<{	//  sender_address query_id
+      c4 PUSH	//  sender_address query_id _55
+      CTOS	//  sender_address query_id ds
+      1 LDI	//  sender_address query_id _89 _88
+      NIP	//  sender_address query_id ds
+      8 LDU	//  sender_address query_id _60 ds
+      s1 s3 XCHG
+      0 PUSHINT
+      2339837749 PUSHINT
+      ROT
+      s0 s4 XCHG	//  _60 ds sender_address _63=0 _64=2339837749 query_id
+      prepare_msg INLINECALLDICT	//  _60 ds _65
+      s1 s2 XCHG	//  ds _60 _65
+      256 STU	//  ds _67
+      SWAP	//  _67 ds
+      LDMSGADDR	//  _67 _93 _92
+      DROP	//  _67 _68
+      STSLICER	//  _70
+      ENDC	//  _71
+      64 PUSHINT	//  _71 _72=64
+      SENDRAWMSG
+    }>	//  sender_address query_id
+    2DROP	// 
+    16 PUSHPOW2DEC	//  _74=65535
+    THROWANY
+  }>
+  get_nft_data PROC:<{
+    // 
+    c4 PUSH	//  _1
+    CTOS	//  ds
+    1 LDI	//  approved ds
+    OVER	//  approved ds approved
+    IFJMP:<{	//  approved ds
+      8 LDU	//  approved _7 ds
+      LDMSGADDR	//  approved _7 _10 ds
+      <b b> PUSHREF	//  approved _7 _10 ds _12
+    }>	//  approved ds
+    DROP	//  approved
+    PUSHNULL	//  approved _13
+    PUSHNULL	//  approved _13 _14
+    PUSHNULL	//  approved _13 _14 _15
+    PUSHNULL	//  approved _13 _14 _15 _16
+  }>
+}END>c
+
+boc>B "assets/nft-code.boc" B>file

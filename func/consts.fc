@@ -1,0 +1,14 @@
+slice consts::si_pfx() asm
+  """
+  <b
+      6 5 u,
+      "assets/nft-code.boc" file>B B>boc ref,
+  b>
+  <s PUSHSLICE""";
+cell consts::item_cell()       asm """ "assets/content.boc"            file>B B>boc PUSHREF """;
+cell consts::collection_cell() asm """ "assets/collection-content.boc" file>B B>boc PUSHREF """;
+
+
+const slice consts::author = "UQCyoez1VF4HbNNq5Rbqfr3zKuoAjKorhK-YZr7LIIiVrX0-"a;
+const slice consts::null_addr = "2_"s;
+const int consts::len = 5;

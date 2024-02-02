@@ -1,0 +1,7 @@
+nft:
+  func:
+    - func/nft.fc
+
+collection:
+  func:
+    - func/collection.fc

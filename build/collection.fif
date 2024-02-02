@@ -1,0 +1,267 @@
+"Asm.fif" include
+// automatically generated from `C:\Users\Tigr\AppData\Local\toncli\toncli\func-libs\error_codes.func` `C:\Users\Tigr\AppData\Local\toncli\toncli\func-libs\math.func` `C:\Users\Tigr\AppData\Local\toncli\toncli\func-libs\stdlib.func` `D:\TON_FunC\onchain-nft-collectioned\func\collection.fc` incl:`func/consts.fc` 
+PROGRAM{
+  DECLPROC power
+  DECLPROC sqrt
+  DECLPROC avg
+  DECLPROC exp
+  DECLPROC log2
+  DECLPROC recv_internal
+  92067 DECLMETHOD get_nft_address_by_index
+  68445 DECLMETHOD get_nft_content
+  102491 DECLMETHOD get_collection_data
+  power PROCREF:<{
+    //  x exponent
+    OVER	//  x exponent x
+    0 EQINT	//  x exponent _3
+    IFJMP:<{	//  x exponent
+      2DROP	// 
+      0 PUSHINT	//  _4=0
+    }>	//  x exponent
+    DUP	//  x exponent exponent
+    0 EQINT	//  x exponent _6
+    IFJMP:<{	//  x exponent
+      2DROP	// 
+      1 PUSHINT	//  _7=1
+    }>	//  x exponent
+    OVER	//  x counter result
+    WHILE:<{
+      OVER	//  x counter result counter
+      1 GTINT	//  x counter result _11
+    }>DO<{	//  x counter result
+      s2 PUSH	//  x counter result x
+      MUL	//  x counter result
+      SWAP	//  x result counter
+      DEC	//  x result counter
+      SWAP	//  x counter result
+    }>	//  x counter result
+    2 1 BLKDROP2	//  result
+  }>
+  sqrt PROCREF:<{
+    //  x
+    DUP	//  x x
+    0 EQINT	//  x _2
+    IFJMP:<{	//  x
+      DROP	// 
+      0 PUSHINT	//  _3=0
+    }>	//  x
+    DUP	//  x x
+    4 LESSINT	//  x _5
+    IFJMP:<{	//  x
+      DROP	// 
+      1 PUSHINT	//  _6=1
+    }>	//  x
+    DUP	//  x x
+    INC	//  x _9
+    1 RSHIFT#	//  x z
+    OVER	//  x z y
+    WHILE:<{
+      2DUP	//  x z y z y
+      LESS	//  x z y _13
+    }>DO<{	//  x z y
+      DROP	//  x z
+      s0 s1 s0 PUSH3	//  x z y x z
+      DIV	//  x z y _14
+      ROT	//  x y _14 z
+      ADD	//  x y _15
+      1 RSHIFT#	//  x y z
+      SWAP	//  x z y
+    }>	//  x z y
+    2 1 BLKDROP2	//  y
+  }>
+  avg PROCREF:<{
+    //  x y
+    ADD	//  _2
+    1 RSHIFT#	//  _4
+  }>
+  exp PROCREF:<{
+    //  x
+    DUP	//  x x
+    -1 GTINT	//  x _2
+    IF:<{	//  x
+      POW2	//  _3
+    }>ELSE<{	//  x
+      1 PUSHINT	//  x _6=1
+      SWAP	//  _6=1 x
+      NEGATE	//  _6=1 _8
+      RSHIFT	//  _3
+    }>
+  }>
+  log2 PROCREF:<{
+    //  x
+    0 PUSHINT	//  x n=0
+    7 PUSHPOW2	//  x n=0 _3=128
+    exp INLINECALLDICT	//  x n=0 _4
+    s2 s(-1) PUXC	//  x n=0 x _4
+    GEQ	//  x n=0 _5
+    IF:<{	//  x n=0
+      DROP	//  x
+      128 RSHIFT#	//  x
+      7 PUSHPOW2	//  x n
+    }>	//  x n
+    64 PUSHINT	//  x n _10=64
+    exp INLINECALLDICT	//  x n _11
+    s2 s(-1) PUXC	//  x n x _11
+    GEQ	//  x n _12
+    IF:<{	//  x n
+      SWAP	//  n x
+      64 RSHIFT#	//  n x
+      SWAP	//  x n
+      64 ADDCONST	//  x n
+    }>	//  x n
+    32 PUSHINT	//  x n _17=32
+    exp INLINECALLDICT	//  x n _18
+    s2 s(-1) PUXC	//  x n x _18
+    GEQ	//  x n _19
+    IF:<{	//  x n
+      SWAP	//  n x
+      32 RSHIFT#	//  n x
+      SWAP	//  x n
+      32 ADDCONST	//  x n
+    }>	//  x n
+    16 PUSHINT	//  x n _24=16
+    exp INLINECALLDICT	//  x n _25
+    s2 s(-1) PUXC	//  x n x _25
+    GEQ	//  x n _26
+    IF:<{	//  x n
+      SWAP	//  n x
+      16 RSHIFT#	//  n x
+      SWAP	//  x n
+      16 ADDCONST	//  x n
+    }>	//  x n
+    8 PUSHINT	//  x n _31=8
+    exp INLINECALLDICT	//  x n _32
+    s2 s(-1) PUXC	//  x n x _32
+    GEQ	//  x n _33
+    IF:<{	//  x n
+      SWAP	//  n x
+      8 RSHIFT#	//  n x
+      SWAP	//  x n
+      8 ADDCONST	//  x n
+    }>	//  x n
+    4 PUSHINT	//  x n _38=4
+    exp INLINECALLDICT	//  x n _39
+    s2 s(-1) PUXC	//  x n x _39
+    GEQ	//  x n _40
+    IF:<{	//  x n
+      SWAP	//  n x
+      4 RSHIFT#	//  n x
+      SWAP	//  x n
+      4 ADDCONST	//  x n
+    }>	//  x n
+    2 PUSHINT	//  x n _45=2
+    exp INLINECALLDICT	//  x n _46
+    s2 s(-1) PUXC	//  x n x _46
+    GEQ	//  x n _47
+    IF:<{	//  x n
+      SWAP	//  n x
+      2 RSHIFT#	//  n x
+      SWAP	//  x n
+      2 ADDCONST	//  x n
+    }>	//  x n
+    1 PUSHINT	//  x n _52=1
+    exp INLINECALLDICT	//  x n _53
+    s1 s2 XCHG	//  n x _53
+    GEQ	//  n _54
+    IF:<{	//  n
+      INC	//  n
+    }>	//  n
+  }>
+  recv_internal PROC:<{
+    //  balance msg_value in_msg_full in_msg_body
+    3 BLKDROP	//  balance
+    30 RSHIFT#	//  _5
+    IFNOTRETALT
+    c4 PUSH	//  _8
+    CTOS	//  ds
+    SREFS	//  _10
+    IFRETALT
+    ACCEPT
+    NEWC	//  _14
+      <b
+          6 5 u,
+          "assets/nft-code.boc" file>B B>boc ref,
+      b>
+      <s PUSHSLICE	//  _14 _15
+    STSLICER	//  si_pfx
+    NEWC	//  si_pfx _18
+    MYADDR	//  si_pfx _18 _19
+    STSLICER	//  si_pfx _20
+    x{8016543D9EAA8BC0ED9A6D5CA2DD4FD7BE655D401195457095F30CD7D9641112B5B_} PUSHSLICE	//  si_pfx _20 _21
+    STSLICER	//  si_pfx d_sfx
+    0 PUSHINT	//  si_pfx d_sfx i=0
+    5 PUSHINT	//  si_pfx d_sfx i=0 _25=5
+    REPEAT:<{	//  si_pfx d_sfx i
+      DUP
+      NEWC	//  si_pfx d_sfx i i _27
+      9 STU	//  si_pfx d_sfx i _29
+      s2 PUSH	//  si_pfx d_sfx i _29 d_sfx
+      STBR	//  si_pfx d_sfx i data
+      s3 PUSH	//  si_pfx d_sfx i data si_pfx
+      STBREF	//  si_pfx d_sfx i _32
+      ENDC	//  si_pfx d_sfx i si
+      5607853406857065877876413530475540124794886 PUSHINT	//  si_pfx d_sfx i si _38
+      OVER	//  si_pfx d_sfx i si _38 si
+      HASHCU	//  si_pfx d_sfx i si _38 _39
+      25088 PUSHINT	//  si_pfx d_sfx i si _38 _39 _40=25088
+      NEWC	//  si_pfx d_sfx i si _38 _39 _40=25088 _41
+      16 STU	//  si_pfx d_sfx i si _38 _39 _43
+      257 PUSHINT	//  si_pfx d_sfx i si _38 _39 _43 _44=257
+      STIX	//  si_pfx d_sfx i si _38 _45
+      144 STU	//  si_pfx d_sfx i si _47
+      STREF	//  si_pfx d_sfx i _48
+      ENDC	//  si_pfx d_sfx i _49
+      1 PUSHINT	//  si_pfx d_sfx i _49 _50=1
+      SENDRAWMSG
+      INC	//  si_pfx d_sfx i
+    }>
+    DROP
+    NIP	//  d_sfx
+    ENDC	//  _54
+    NEWC	//  _54 _55
+    STDICT	//  _56
+    ENDC	//  _57
+    c4 POP
+  }>
+  get_nft_address_by_index PROC:<{
+    //  i
+    c4 PUSH	//  i _2
+    CTOS	//  i _3
+    PLDDICT	//  i _4
+    CTOS	//  i d_sfx
+    SWAP
+    NEWC	//  d_sfx i _7
+    9 STU	//  d_sfx _9
+    SWAP	//  _9 d_sfx
+    STSLICER	//  data
+    NEWC	//  data _12
+      <b
+          6 5 u,
+          "assets/nft-code.boc" file>B B>boc ref,
+      b>
+      <s PUSHSLICE	//  data _12 _13
+    STSLICER	//  data _14
+    STBREF	//  _15
+    ENDC	//  si
+    HASHCU	//  _18
+    10 PUSHPOW2	//  _18 _19=1024
+    NEWC	//  _18 _19=1024 _20
+    11 STU	//  _18 _22
+    256 STU	//  addr
+    ENDC	//  _25
+    CTOS	//  _26
+  }>
+  get_nft_content PROC:<{
+    //  _0 _1
+    2DROP	// 
+     "assets/content.boc"            file>B B>boc PUSHREF 	//  _2
+  }>
+  get_collection_data PROC:<{
+    // 
+    5 PUSHINT	//  _0=5
+     "assets/collection-content.boc" file>B B>boc PUSHREF 	//  _0=5 _1
+    x{2_} PUSHSLICE	//  _0=5 _1 _2
+  }>
+}END>c
+
+boc>B "assets/collection-code.boc" B>file

@@ -1,0 +1,112 @@
+;; NFT item
+;; _#_ approved:u1 index:u8 collection:MsgAddressInt owner:MsgAddressInt = ContractStorage;
+
+const int min_tons_for_storage = 67108864;  ;; (1 << 26) = 0.0671 TON
+const int fwd_fees = 8388608;               ;; (1 << 23) = 0.0083 TON
+const int op::transfer = 0x5fcc3d14;
+const int op::ownership_assigned = 0x05138d91;
+const int op::excesses = 0xd53276db;
+const int op::get_static_data = 0x2fcb26a2;
+const int op::report_static_data = 0x8b771735;
+
+() terminate_unless(int) impure asm "IFNOTRETALT";
+() terminate_if(int) impure asm "IFRETALT";
+int equal_slices(slice, slice) asm "SDEQ";
+cell empty_cell() asm "<b b> PUSHREF";
+
+([int, int, slice, slice], slice) ~_typed_pop([int, int, slice, slice]) impure asm "TPOP";
+([int, int, slice, slice], ()) ~_typed_push([int, int, slice, slice], slice) impure asm "TPUSH";
+
+
+
+[int, int, slice, slice] load_data() inline {
+    slice ds = get_data().begin_parse();
+    return tuple4(ds~load_int(1), ds~load_uint(8), ds~load_msg_addr(), ds);
+}
+() store_data([int, int, slice, slice] info) impure inline {
+    (int approved, int index, slice coll, slice owner) = info.untuple4();
+    begin_cell()
+        .store_int(approved, 1).store_uint(index, 8).store_slice(coll).store_slice(owner)
+        .end_cell().set_data();
+}
+
+builder prepare_msg(slice to_address, int amount, int op, int query_id) inline {
+    return begin_cell()
+        .store_uint(0x10, 6) ;; nobounce - int_msg_info$0 ihr_disabled:Bool bounce:Bool bounced:Bool src:MsgAddress -> 010000
+        .store_slice(to_address)
+        .store_coins(amount)
+        .store_uint(op, 1 + 4 + 4 + 64 + 32 + 1 + 1 + 32)
+        .store_uint(query_id, 64);
+}
+
+() transfer_ownership(slice sender_address, int query_id, slice in_msg_body) impure inline {
+    [int, int, slice, slice] info = load_data();
+    slice owner_address = info~_typed_pop();
+    throw_unless(32, equal_slices(sender_address, owner_address));
+    slice new_owner_address = in_msg_body~load_msg_addr();
+    info~_typed_push(new_owner_address); info.store_data();
+    
+    slice response_destination = in_msg_body~load_msg_addr();
+    in_msg_body~load_int(1);  ;; this nft doesn't use custom_payload
+    int forward_amount = in_msg_body~load_coins();
+    
+    if (forward_amount) {
+        prepare_msg(new_owner_address, forward_amount, op::ownership_assigned, query_id)
+            .store_slice(owner_address).store_slice(in_msg_body)
+            .end_cell().send_raw_message(1);
+    }
+    if (response_destination.slice_bits() > 2) {
+        prepare_msg(response_destination, 0, op::excesses, query_id)
+            .end_cell().send_raw_message(128 + 2);  ;; if there is no excess money, don't raise errors
+    }
+}
+
+() recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
+    slice cs = in_msg_full.begin_parse();
+    terminate_if(cs~load_uint(4) & 1);
+    slice sender_address = cs~load_msg_addr();
+    
+    ;; validating that item is within range approved by the collection
+    
+    slice ds = get_data().begin_parse();
+    ifnot (ds~load_uint(1)) {
+        slice ds' = ds;
+        ds~skip_bits(8);
+        terminate_unless(equal_slices(sender_address, ds~load_msg_addr()));
+        begin_cell().store_uint(1, 1).store_slice(ds').end_cell().set_data();
+        return ();
+    }
+    
+    ;; item was indeed initialized by collection; processing it
+    
+    terminate_if(in_msg_body.slice_empty?());
+    raw_reserve(min_tons_for_storage, 0);
+
+    int op = in_msg_body~load_uint(32);
+    int query_id = in_msg_body~load_uint(64);
+
+    if (op == op::transfer) {
+        transfer_ownership(sender_address, query_id, in_msg_body);
+        return ();
+    }
+    if (op == op::get_static_data) {
+        slice ds = get_data().begin_parse(); ds~load_int(1);
+        prepare_msg(sender_address, 0, op::report_static_data, query_id)
+            .store_uint(ds~load_uint(8), 256).store_slice(ds~load_msg_addr())
+            .end_cell().send_raw_message(64);  ;; carry all the remaining value of the inbound message
+        return ();
+    }
+    throw(0xffff);
+}
+
+;;  get-method
+
+(int, int, slice, slice, cell) get_nft_data() method_id {
+    slice ds = get_data().begin_parse();
+    int approved = ds~load_int(1);
+    if (approved) {
+        return (approved, ds~load_uint(8), ds~load_msg_addr(), ds, empty_cell());
+    } else {
+        return (approved, null(), null(), null(), null());
+    }
+}

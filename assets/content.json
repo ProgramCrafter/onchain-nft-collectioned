@@ -1,0 +1,13 @@
+{
+    "nft": {
+        "name":        ["__serialize_short", "No differences split us"],
+        "description": ["__serialize_short", "Onchain-image NFT in collection of five, with gems of various blue shades representing the different projects on TON."],
+        "image_path":  "image.webp"
+    },
+    "collection": {
+        "name":        ["__serialize_short", "No differences split us - Collection"],
+        "description": ["__serialize_short", "Onchain-image NFT in collection of five, with gems of various blue shades representing the different projects on TON."],
+        "marketplace": ["__serialize_short", "getgems.io"],
+        "image_path":  "image-collection.webp"
+    }
+}

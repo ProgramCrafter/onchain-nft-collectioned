@@ -1,0 +1,64 @@
+#include "func/consts.fc";
+
+;; NFT collection
+;; uninit$0                         = ContractStorage;
+;; init$1   prepared_data_sfx:^Cell = ContractStorage;
+
+builder __asm_stbref(builder, builder) asm "STBREF";    ;; stores left builder as ref to the right
+() terminate_unless(int) impure asm "IFNOTRETALT";
+() terminate_if(int) impure asm "IFRETALT";
+
+
+() recv_internal(int balance, int msg_value, cell in_msg_full, slice in_msg_body) {
+    terminate_unless(balance >> 30);        ;; if there is less than 1.074 TON, we won't init collection
+    
+    slice ds = get_data().begin_parse();
+    terminate_if(ds.slice_refs());          ;; if collection was initialized, doing nothing
+    accept_message();                       ;; actual message may carry few TON, using contract balance instead
+    
+    ;; we need to deploy 5 NFTs
+    ;; out message: (0x18, 6) (addr) (coins) (6, 108) (|si)
+    ;;                                                (6, 5) (^code) (|data)
+    ;;                                                               (0, 1) (index, 8) (collection) (owner)
+    
+    ;; 
+    
+    builder si_pfx = begin_cell().store_slice(consts::si_pfx());
+    builder d_sfx  = begin_cell().store_slice(my_address()).store_slice(consts::author);
+    int i = 0;
+    
+    repeat(consts::len) {
+        builder data = begin_cell().store_uint(i, 9).store_builder(d_sfx);
+        cell si = data.__asm_stbref(si_pfx).end_cell();
+        
+        begin_cell()
+            .store_uint(0x6200, 16)
+            .store_int(si.cell_hash(), 257)
+            .store_uint((0x203 << 133) + 6, 144)
+            .store_ref(si)
+            .end_cell()
+            .send_raw_message(1);    ;; definitely not ignoring errors
+        
+        i += 1;
+    }
+    
+    begin_cell().store_dict(d_sfx.end_cell()).end_cell().set_data();
+}
+
+;;  get-methods, required by TEP-62
+
+slice get_nft_address_by_index(int i) method_id {
+    slice d_sfx = get_data().begin_parse().preload_dict().begin_parse();
+    builder data = begin_cell().store_uint(i, 9).store_slice(d_sfx);
+    cell si = data.__asm_stbref(begin_cell().store_slice(consts::si_pfx())).end_cell();
+    builder addr = begin_cell().store_uint(1024, 11).store_uint(si.cell_hash(), 256);
+    return addr.end_cell().begin_parse();
+}
+
+cell get_nft_content(int, cell) method_id {
+    return consts::item_cell();
+}
+
+_ get_collection_data() method_id {
+    return (consts::len, consts::collection_cell(), consts::null_addr);
+}
